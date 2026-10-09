@@ -1,0 +1,83 @@
+---
+layout: default
+---
+
+<style>
+  @media (min-width: 1200px) {
+    #main-wrapper main,
+    #tail-wrapper {
+      width: 100%;
+    }
+
+    #panel-wrapper {
+      display: none;
+    }
+  }
+
+  .skill-prose {
+    max-width: 48rem;
+  }
+
+  .skill-meta {
+    font-size: 0.9rem;
+  }
+
+  .skill-body {
+    border-left: 3px solid var(--main-border-color);
+    padding-left: 1.25rem;
+    margin: 1.5rem 0 2.5rem;
+  }
+
+  .skill-example {
+    display: block;
+    width: 100%;
+    height: 70vh;
+    border: 1px solid var(--main-border-color);
+    border-radius: 6px;
+  }
+</style>
+
+<article class="px-1">
+  <h1 data-toc-skip>{{ page.title }}</h1>
+
+  <div class="content">
+    <div class="skill-prose">
+      <p class="lead">{{ page.description }}</p>
+      <p class="skill-meta text-muted">
+        From my dotfiles at <code>{{ page.skill.commit }}</code>
+        {%- if page.skill.dirty %} + uncommitted edits{% endif %} · {{ page.skill.date }} ·
+        <a href="{{ page.skill.raw_url | relative_url }}">Raw SKILL.md</a>
+      </p>
+
+      <div class="skill-body">
+        {{ content }}
+      </div>
+    </div>
+
+    {% for example in page.skill.examples %}
+      <h2 id="example-{{ forloop.index }}">Example: {{ example.title }}</h2>
+      <p class="skill-meta text-muted">
+        Unedited output of this skill.
+        <a href="{{ example.src | relative_url }}" target="_blank" rel="noopener">Open full page</a>
+      </p>
+      <iframe
+        class="skill-example"
+        src="{{ example.src | relative_url }}"
+        title="{{ example.title }}"
+        loading="lazy"
+      ></iframe>
+    {% endfor %}
+  </div>
+</article>
+
+<script>
+  document.querySelectorAll('iframe.skill-example').forEach((frame) => {
+    const fit = () => {
+      frame.style.height = frame.contentDocument.documentElement.scrollHeight + 'px';
+    };
+    frame.addEventListener('load', () => {
+      fit();
+      new ResizeObserver(fit).observe(frame.contentDocument.body);
+    });
+  });
+</script>

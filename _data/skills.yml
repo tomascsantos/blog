@@ -1,0 +1,7 @@
+# Skills published under /skills/. Each SKILL.md is read from the dotfiles
+# repo at build time (see `skills:` in _config.yml); examples are standalone
+# HTML pages under assets/skills/<name>/, embedded on the skill's page.
+- name: show-me-codebase-design
+  examples:
+    - title: Gym Twin merge requests
+      src: /assets/skills/show-me-codebase-design/gym-twin-merge-requests.html

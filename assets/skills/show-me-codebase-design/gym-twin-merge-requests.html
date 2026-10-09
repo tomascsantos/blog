@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gym Twin merge requests: Talk threads scoped to git, reviewed in 3D</title>
+<style>
+  :root {
+    --paper: #f4efe4; --card: #fffcf5; --ink: #1d1a16; --muted: #6b5f50; --accent: #8a4b16;
+    --band: #ebe3d3; --band2: #e4ead8; --band3: #e9e1ea; --band4: #e3e8ee;
+    --add: #1a7f37; --add-bg: #dafbe1; --mod: #9a6700; --mod-bg: #fff1b8; --del: #cf222e; --del-bg: #ffebe9;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1220px; margin: 0 auto; padding: 14px 16px 40px; }
+  h1 { font-size: 26px; line-height: 1.25; margin: 6px 0 10px; }
+  h2 { font-size: 17px; margin: 22px 0 8px; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); }
+  p.abstract { margin: 0 0 6px; max-width: 1100px; }
+  svg { width: 100%; height: auto; display: block; background: var(--card); border: 1px solid #d8cfbf; border-radius: 6px; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--ink); }
+  svg .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11px; }
+  svg .name { font-size: 15px; font-weight: 700; }
+  svg .path { font-size: 11px; fill: var(--muted); }
+  svg .impl { font-size: 11.5px; font-style: italic; fill: #4a4035; }
+  svg .lbl { font-size: 11.5px; fill: var(--accent); font-weight: 600; }
+  svg .msg { font-size: 11.5px; }
+  svg .phase { font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: var(--muted); }
+  svg .key { font-size: 11.5px; fill: var(--ink); }
+  ul.seams { margin: 0; padding-left: 20px; }
+  ul.seams li { margin: 4px 0; }
+  code { font: 13.5px ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: #ece4d4; padding: 0 4px; border-radius: 3px; }
+  .tag { font: 700 12px ui-monospace, "SF Mono", Menlo, Consolas, monospace; padding: 0 5px; border-radius: 3px; margin-right: 4px; }
+  .tag.new { color: var(--add); background: var(--add-bg); }
+  .tag.changed { color: var(--mod); background: var(--mod-bg); }
+  .tag.removed { color: var(--del); background: var(--del-bg); }
+  .tag.same { color: var(--muted); background: #ece4d4; }
+  details { background: var(--card); border: 1px solid #d8cfbf; border-radius: 5px; margin: 5px 0; }
+  summary { cursor: pointer; padding: 6px 10px; }
+  summary b { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14.5px; }
+  details table { border-collapse: collapse; margin: 0 10px 10px 28px; font-size: 14.5px; }
+  details td { padding: 3px 14px 3px 0; vertical-align: top; }
+  details td:first-child { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px; white-space: nowrap; }
+  tr.new td:first-child { color: var(--add); background: var(--add-bg); }
+  tr.changed td:first-child { color: var(--mod); background: var(--mod-bg); }
+  tr.removed td:first-child { color: var(--del); background: var(--del-bg); text-decoration: line-through; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  @media (max-width: 900px) { .types { grid-template-columns: 1fr; } }
+</style></head>
+<body><main>
+<h1>Gym Twin merge requests: Talk threads scoped to git, reviewed in 3D</h1>
+<p class="abstract">No new module. <b>Talk</b>'s page key gains a change, so a thread is either Live (main, the gym Fernando sees) or one merge request's review, and <b>page_access</b> answers a review with its existing owner-only rule. <b>CI</b> builds every MR commit into a review line in gym_twin's <b>Revisions</b>, which the <b>Gym Viewer</b> and <b>HUD</b> open as the merge request page in 3D. gym_twin's <b>Mirror</b>, which already copies Live threads to <b>Rocket.Chat</b>, copies review threads to <b>GitLab</b> MR discussions, where the <b>Agent Loop</b> already turns a note into a commit and a reply. N in the viewer opens a HUD draft at the crosshair with a snapshot of the view. Talk stores an image once and <b>artifacts_host</b> serves it by hash, so the Mirror sends links and both chats render the same copy. Merging deploys main, and Revisions tells Fernando's threads what changed. Hand-published preview pages go away.</p>
+<h2>Modules</h2>
+<svg viewBox="0 0 1200 848" role="img" aria-label="Module diagram">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5a4632"/></marker><marker id="ahr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cf222e"/></marker></defs>
+<g stroke="#5a4632" stroke-width="1.6" fill="none" marker-end="url(#ah)">
+<line x1="236" y1="76" x2="326" y2="76"/>
+<line x1="554" y1="76" x2="644" y2="76"/>
+<line x1="872" y1="76" x2="962" y2="76"/>
+<line x1="123" y1="206" x2="123" y2="294"/>
+<line x1="759" y1="296" x2="759" y2="208"/>
+<path d="M236 308 H600 V160 H644"/>
+<line x1="646" y1="420" x2="556" y2="420"/>
+<line x1="872" y1="370" x2="962" y2="370"/>
+<line x1="759" y1="492" x2="759" y2="580"/>
+<line x1="872" y1="640" x2="962" y2="640"/>
+<line x1="964" y1="716" x2="874" y2="716"/>
+<path d="M759 778 V818 H123 V780"/>
+<line x1="123" y1="582" x2="123" y2="494"/>
+</g>
+<line x1="340" y1="580" x2="240" y2="496" stroke="#cf222e" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahr)"/>
+<text class="lbl" x="282" y="52" text-anchor="middle">N: drafts a</text>
+<text class="lbl" x="282" y="65" text-anchor="middle">snapshot in</text>
+<text class="lbl" x="600" y="52" text-anchor="middle">writes threads</text>
+<text class="lbl" x="600" y="65" text-anchor="middle">by page in</text>
+<text class="lbl" x="918" y="52" text-anchor="middle">authorizes</text>
+<text class="lbl" x="918" y="65" text-anchor="middle">each page with</text>
+<text class="lbl" x="131" y="244" text-anchor="start">loads lines, builds</text>
+<text class="lbl" x="131" y="257" text-anchor="start">and diffs from</text>
+<text class="lbl" x="767" y="244" text-anchor="start">watches, posts</text>
+<text class="lbl" x="767" y="257" text-anchor="start">replies back to</text>
+<text class="lbl" x="418" y="300" text-anchor="middle">posts merge notices to</text>
+<text class="lbl" x="918" y="346" text-anchor="middle">mirrors Live</text>
+<text class="lbl" x="918" y="359" text-anchor="middle">threads to</text>
+<text class="lbl" x="600" y="396" text-anchor="middle">links images</text>
+<text class="lbl" x="600" y="409" text-anchor="middle">hosted on</text>
+<text class="lbl" x="767" y="530" text-anchor="start">mirrors Review threads</text>
+<text class="lbl" x="767" y="543" text-anchor="start">as MR discussions to</text>
+<text class="lbl" x="918" y="616" text-anchor="middle">hands each</text>
+<text class="lbl" x="918" y="629" text-anchor="middle">note to</text>
+<text class="lbl" x="918" y="734" text-anchor="middle">commits +</text>
+<text class="lbl" x="918" y="747" text-anchor="middle">replies in</text>
+<text class="lbl" x="441" y="834" text-anchor="middle">runs MR and main pipelines in</text>
+<text class="lbl" x="115" y="530" text-anchor="end">deploys releases</text>
+<text class="lbl" x="115" y="543" text-anchor="end">(main or !N) into</text>
+<text class="lbl" x="300" y="540" text-anchor="start" style="fill:#cf222e">replaced by</text>
+<g transform="translate(10,10)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">Gym Viewer</text>
+<text class="path" x="10" y="36">cad/blender/scene_viewer</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<rect x="3" y="50" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="61" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="61" style="fill:#1a7f37">open(page, ?change=!N)</text>
+<rect x="3" y="65" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="76" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="76" style="fill:#1a7f37">compare(base, head)</text>
+<rect x="3" y="80" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="91" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="91" style="fill:#1a7f37">N → compose(anchor, shot)</text>
+<rect x="3" y="95" width="220" height="15" fill="#ffebe9"/>
+<text class="mono" x="6" y="106" style="fill:#cf222e;font-weight:700">−</text>
+<text class="mono" x="16" y="106" style="fill:#cf222e" text-decoration="line-through">N → toast, then click</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">N: the crosshair&#x27;s anchor and a</text>
+<text class="impl" x="10" y="149">canvas snapshot, drafted in the</text>
+<text class="impl" x="10" y="164">HUD; ?change = the MR page:</text>
+<text class="impl" x="10" y="179">diff, commit stepper, outdated</text>
+</g>
+<g transform="translate(328,10)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">HUD</text>
+<text class="path" x="10" y="36">apps/talk/hud</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<rect x="3" y="50" width="220" height="15" fill="#fff1b8"/>
+<text class="mono" x="6" y="61" style="fill:#9a6700;font-weight:700">~</text>
+<text class="mono" x="16" y="61" style="fill:#9a6700">__hudPage {route, change}</text>
+<text class="mono" x="16" y="76">facet · openAt · ask · resolve</text>
+<rect x="3" y="80" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="91" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="91" style="fill:#1a7f37">compose(anchor, blobs)</text>
+<rect x="3" y="95" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="106" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="106" style="fill:#1a7f37">attach(paste | drop)</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">a draft shows its snapshot;</text>
+<text class="impl" x="10" y="149">Send uploads, Cancel stores</text>
+<text class="impl" x="10" y="164">nothing; Review !N chip; image</text>
+<text class="impl" x="10" y="179">rendering: out of scope</text>
+</g>
+<g transform="translate(646,10)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">Talk</text>
+<text class="path" x="10" y="36">apps/talk · deep</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<rect x="3" y="50" width="220" height="15" fill="#fff1b8"/>
+<text class="mono" x="6" y="61" style="fill:#9a6700;font-weight:700">~</text>
+<text class="mono" x="16" y="61" style="fill:#9a6700">PageRef + change</text>
+<rect x="3" y="65" width="220" height="15" fill="#fff1b8"/>
+<text class="mono" x="6" y="76" style="fill:#9a6700;font-weight:700">~</text>
+<text class="mono" x="16" y="76" style="fill:#9a6700">post(text, images[])</text>
+<rect x="3" y="80" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="91" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="91" style="fill:#1a7f37">upload(image) → ImageRef</text>
+<text class="mono" x="16" y="106">start · ask · resolve · watch</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">threads keyed by page + change;</text>
+<text class="impl" x="10" y="149">an image is stored once, by</text>
+<text class="impl" x="10" y="164">sha256, in /var/lib/talk/media;</text>
+<text class="impl" x="10" y="179">anchors keep extra.view</text>
+</g>
+<g transform="translate(964,10)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">page_access</text>
+<text class="path" x="10" y="36">molab.auth</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<text class="mono" x="16" y="61">authorize(who, page)</text>
+<rect x="3" y="65" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="76" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="76" style="fill:#1a7f37">page.change → OWNER_ONLY</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">Live: the page&#x27;s share</text>
+<text class="impl" x="10" y="149">(Fernando and Austin comment)</text>
+<text class="impl" x="10" y="164">Review: the owner policy that</text>
+<text class="impl" x="10" y="179">already exists</text>
+</g>
+<g transform="translate(10,296)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">Revisions</text>
+<text class="path" x="10" y="36">apps/gym_twin/revisions.py</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<rect x="3" y="50" width="220" height="15" fill="#fff1b8"/>
+<text class="mono" x="6" y="61" style="fill:#9a6700;font-weight:700">~</text>
+<text class="mono" x="16" y="61" style="fill:#9a6700">ingest(release, page/)</text>
+<rect x="3" y="65" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="76" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="76" style="fill:#1a7f37">line(main | !N)</text>
+<rect x="3" y="80" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="91" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="91" style="fill:#1a7f37">diff(build, build)</text>
+<rect x="3" y="95" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="106" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="106" style="fill:#1a7f37">notify(merged release)</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">a review line never flips the</text>
+<text class="impl" x="10" y="149">live site; a main release of</text>
+<text class="impl" x="10" y="164">!N posts “Changed in &lt;title&gt;”</text>
+<text class="impl" x="10" y="179">on the threads it cites</text>
+</g>
+<g transform="translate(646,296)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">Mirror</text>
+<text class="path" x="10" y="36">apps/gym_twin/mirror.py</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<text class="mono" x="16" y="61">Talk ⇄ RC: Live threads</text>
+<rect x="3" y="65" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="76" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="76" style="fill:#1a7f37">Talk ⇄ MR: Review threads</text>
+<rect x="3" y="80" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="91" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="91" style="fill:#1a7f37">images out: CDN links</text>
+<rect x="3" y="95" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="106" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="106" style="fill:#1a7f37">uploads in: into Talk once</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">same Store, origin ids rc:/gl:;</text>
+<text class="impl" x="10" y="149">RC image_url, GitLab ![](url):</text>
+<text class="impl" x="10" y="164">both render the one CDN copy;</text>
+<text class="impl" x="10" y="179">a review thread = a discussion</text>
+</g>
+<g transform="translate(328,326)">
+<rect width="226" height="166" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#efe8da"/>
+<rect width="226" height="166" rx="5" fill="none" stroke="#2f2a24" stroke-width="1.4"/>
+<text class="name" x="10" y="20">artifacts_host</text>
+<text class="path" x="10" y="36">cdn.molab.life</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#2f2a24" stroke-width="1"/>
+<text class="mono" x="16" y="61">GET /talk-media/&lt;sha&gt;.&lt;ext&gt;</text>
+<line x1="0" y1="71" x2="226" y2="71" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="89">as is: ~/served/talk-media is a</text>
+<text class="impl" x="10" y="104">symlink to /var/lib/talk/media,</text>
+<text class="impl" x="10" y="119">like the gym twin site; public</text>
+<text class="impl" x="10" y="134">by hash, no login</text>
+</g>
+<g transform="translate(964,296)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#efe8da"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#2f2a24" stroke-width="1.4"/>
+<text class="name" x="10" y="20">Rocket.Chat</text>
+<text class="path" x="10" y="36">gym-twin room</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#2f2a24" stroke-width="1"/>
+<text class="mono" x="16" y="61">one RC thread per Live</text>
+<text class="mono" x="16" y="76">thread</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">as is; never sees a review</text>
+<text class="impl" x="10" y="149">thread</text>
+</g>
+<g transform="translate(10,582)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#fff1b8"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#9a6700" stroke-width="2.2"/>
+<text class="name" x="10" y="20">CI · Scene Build</text>
+<text class="path" x="10" y="36">scene_support + deploy_support</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#9a6700" stroke-width="1"/>
+<text class="mono" x="16" y="61">package(spec) → page/</text>
+<rect x="3" y="65" width="220" height="15" fill="#fff1b8"/>
+<text class="mono" x="6" y="76" style="fill:#9a6700;font-weight:700">~</text>
+<text class="mono" x="16" y="76" style="fill:#9a6700">release.json + line, base</text>
+<rect x="3" y="80" width="220" height="15" fill="#dafbe1"/>
+<text class="mono" x="6" y="91" style="fill:#1a7f37;font-weight:700">+</text>
+<text class="mono" x="16" y="91" style="fill:#1a7f37">MR job: review release</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">main: deploy:prod as today</text>
+<text class="impl" x="10" y="149">MR: the same page target, as</text>
+<text class="impl" x="10" y="164">a review release; BuildId has</text>
+<text class="impl" x="10" y="179">no sha, so a squash keeps it</text>
+</g>
+<g transform="translate(328,582)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#ffebe9"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#cf222e" stroke-width="2.2" stroke-dasharray="7 4"/>
+<text class="name" x="10" y="20">Preview pages</text>
+<text class="path" x="10" y="36">cad/blender/scene.py publish</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#cf222e" stroke-width="1"/>
+<rect x="3" y="50" width="220" height="15" fill="#ffebe9"/>
+<text class="mono" x="6" y="61" style="fill:#cf222e;font-weight:700">−</text>
+<text class="mono" x="16" y="61" style="fill:#cf222e" text-decoration="line-through">publish --name &lt;preview&gt;</text>
+<rect x="3" y="65" width="220" height="15" fill="#ffebe9"/>
+<text class="mono" x="6" y="76" style="fill:#cf222e;font-weight:700">−</text>
+<text class="mono" x="16" y="76" style="fill:#cf222e" text-decoration="line-through">copied prod threads</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">a preview is an MR now; its</text>
+<text class="impl" x="10" y="149">review line replaces the</text>
+<text class="impl" x="10" y="164">hand-published copy</text>
+</g>
+<g transform="translate(646,582)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#efe8da"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#2f2a24" stroke-width="1.4"/>
+<text class="name" x="10" y="20">GitLab</text>
+<text class="path" x="10" y="36">gitlab.dadovida.com</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#2f2a24" stroke-width="1"/>
+<text class="mono" x="16" y="61">MR · notes · pipelines</text>
+<text class="mono" x="16" y="76">merge · webhooks</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">truth for commits and the</text>
+<text class="impl" x="10" y="149">merge</text>
+</g>
+<g transform="translate(964,582)">
+<rect width="226" height="196" rx="5" fill="#fffcf5"/>
+<path d="M0 5 a5 5 0 0 1 5 -5 H221 a5 5 0 0 1 5 5 V44 H0 z" fill="#efe8da"/>
+<rect width="226" height="196" rx="5" fill="none" stroke="#2f2a24" stroke-width="1.4"/>
+<text class="name" x="10" y="20">Agent Loop</text>
+<text class="path" x="10" y="36">apps/harness GitLabSource</text>
+<line x1="0" y1="44" x2="226" y2="44" stroke="#2f2a24" stroke-width="1"/>
+<text class="mono" x="16" y="61">MR note → agent turn</text>
+<text class="mono" x="16" y="76">commit · reply note</text>
+<line x1="0" y1="116" x2="226" y2="116" stroke="#c9bfae" stroke-dasharray="3 3"/>
+<text class="impl" x="10" y="134">as is: notes already reach</text>
+<text class="impl" x="10" y="149">the MR&#x27;s agent; it pushes to</text>
+<text class="impl" x="10" y="164">the branch and answers in</text>
+<text class="impl" x="10" y="179">the discussion</text>
+</g>
+<g transform="translate(830,808)">
+<rect x="0" width="22" height="14" rx="2" fill="#dafbe1" stroke="#1a7f37" stroke-width="1.6"/><text class="key" x="28" y="11">+ new</text>
+<rect x="90" width="22" height="14" rx="2" fill="#fff1b8" stroke="#9a6700" stroke-width="1.6"/><text class="key" x="118" y="11">~ changed</text>
+<rect x="180" width="22" height="14" rx="2" fill="#ffebe9" stroke="#cf222e" stroke-width="1.6" stroke-dasharray="5 3"/><text class="key" x="208" y="11">− removed</text>
+<rect x="270" width="22" height="14" rx="2" fill="#efe8da" stroke="#2f2a24" stroke-width="1.6"/><text class="key" x="298" y="11">as is</text>
+</g>
+</svg>
+<h2>Seams</h2>
+<ul class="seams"><li><b>PageRef.change</b> (HUD ⇄ Talk ⇄ page_access): the page key every thread, socket and Grant already uses gains <code>change</code>. <code>null</code> is Live, the gym Fernando sees; <code>!N</code> is that merge request's review. page_access answers a review page with the owner-only policy it already has.</li><li><b>Anchor view</b> (Gym Viewer ⇄ Talk): as today: <code>extra.view {layout, build, sha}</code> and the placement. A review thread is outdated when its placement differs between <code>view.build</code> and the head's build.</li><li><b>Release line</b> (CI → Revisions): <code>release.json</code> gains <code>line</code> and <code>base</code>. Line <code>main</code> flips the live site as today; line <code>!N</code> only adds a commit to that review.</li><li><b>Mirror sink</b> (Talk ⇄ Mirror ⇄ GitLab): the Rocket.Chat mirror's Store takes a second sink: a review thread is one MR discussion (<code>gl:&lt;note&gt;</code> beside <code>rc:&lt;id&gt;</code>). Live threads still go to Rocket.Chat only.</li><li><b>MR note → commit</b> (GitLab ⇄ Agent Loop): as is: the harness routes MR notes to the MR's agent, which pushes to the branch and replies.</li><li><b>Draft (N)</b> (Gym Viewer → HUD → Talk): N calls <code>__hud.compose({anchor, images})</code>, beside the existing <code>openAt</code>: the anchor at the crosshair and a snapshot of the canvas. The HUD shows the snapshot in its composer; nothing reaches Talk until Send, which uploads it and starts the thread. Cancel stores nothing.</li><li><b>Image</b> (HUD → Talk → artifacts_host; Mirror → RC, GitLab): an image is uploaded once and stored by its sha256; a post carries <code>ImageRef</code>s. The Mirror sends only the link: Rocket.Chat as <code>image_url</code>, GitLab as <code>![](url)</code>, so both render the one CDN copy. The URL works without login, because Rocket.Chat's mobile app and link previews carry no cdn cookie: the hash is the secret. An image someone uploads in Rocket.Chat or GitLab needs their login to fetch, so the Mirror copies it into Talk once.</li><li><b>Merge notice</b> (Revisions → Talk): a main release that names <code>mr !N</code> posts “Changed in &lt;title&gt;” on the Live threads the change log cites (its entries gain <code>threads</code>).</li></ul>
+<h2>Flow</h2>
+<svg viewBox="0 0 1200 869" role="img" aria-label="Flow diagram">
+<defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f2a24"/></marker></defs>
+<rect x="0" y="50" width="1200" height="159" fill="var(--band)"/>
+<text class="phase" x="8" y="64">LIVE · FERNANDO COMMENTS</text>
+<rect x="0" y="209" width="1200" height="134" fill="var(--band2)"/>
+<text class="phase" x="8" y="223">REVISE · TOMAS ASKS THE AI</text>
+<rect x="0" y="343" width="1200" height="359" fill="var(--band3)"/>
+<text class="phase" x="8" y="357">REVIEW IN 3D · REPEAT</text>
+<rect x="0" y="702" width="1200" height="159" fill="var(--band4)"/>
+<text class="phase" x="8" y="716">MERGE · DEPLOY · FERNANDO SEES</text>
+<g transform="translate(9,10)"><rect width="132" height="30" rx="4" fill="#fffcf5" stroke="#2f2a24" stroke-width="1.2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">Fernando</text></g>
+<g transform="translate(157,10)"><rect width="132" height="30" rx="4" fill="#fffcf5" stroke="#2f2a24" stroke-width="1.2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">Tomas</text></g>
+<g transform="translate(305,10)"><rect width="132" height="30" rx="4" fill="#fff1b8" stroke="#9a6700" stroke-width="2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">Gym (viewer+HUD)</text></g>
+<g transform="translate(453,10)"><rect width="132" height="30" rx="4" fill="#fff1b8" stroke="#9a6700" stroke-width="2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">Talk</text></g>
+<g transform="translate(601,10)"><rect width="132" height="30" rx="4" fill="#fff1b8" stroke="#9a6700" stroke-width="2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">gym_twin</text></g>
+<g transform="translate(749,10)"><rect width="132" height="30" rx="4" fill="#fff1b8" stroke="#9a6700" stroke-width="2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">CI</text></g>
+<g transform="translate(897,10)"><rect width="132" height="30" rx="4" fill="#fffcf5" stroke="#2f2a24" stroke-width="1.2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">GitLab</text></g>
+<g transform="translate(1045,10)"><rect width="132" height="30" rx="4" fill="#fffcf5" stroke="#2f2a24" stroke-width="1.2"/><text x="66" y="20" text-anchor="middle" style="font-size:12.5px;font-weight:700">Agent Loop</text></g>
+<g stroke="#8f8373" stroke-width="1" stroke-dasharray="4 4">
+<line x1="75" y1="40" x2="75" y2="865"/>
+<line x1="223" y1="40" x2="223" y2="865"/>
+<line x1="371" y1="40" x2="371" y2="865"/>
+<line x1="519" y1="40" x2="519" y2="865"/>
+<line x1="667" y1="40" x2="667" y2="865"/>
+<line x1="815" y1="40" x2="815" y2="865"/>
+<line x1="963" y1="40" x2="963" y2="865"/>
+<line x1="1111" y1="40" x2="1111" y2="865"/>
+</g>
+<g stroke="#2f2a24" stroke-width="1.4" fill="none" marker-end="url(#fa)">
+<line x1="75" y1="95" x2="368" y2="95"/>
+<line x1="75" y1="120" x2="368" y2="120"/>
+<line x1="371" y1="145" x2="516" y2="145"/>
+<line x1="371" y1="170" x2="516" y2="170"/>
+<line x1="519" y1="195" x2="664" y2="195"/>
+<line x1="223" y1="254" x2="1108" y2="254"/>
+<line x1="1111" y1="279" x2="966" y2="279"/>
+<line x1="963" y1="304" x2="818" y2="304"/>
+<line x1="815" y1="329" x2="670" y2="329"/>
+<line x1="223" y1="388" x2="368" y2="388"/>
+<line x1="371" y1="413" x2="664" y2="413"/>
+<line x1="223" y1="438" x2="368" y2="438"/>
+<line x1="371" y1="463" x2="516" y2="463"/>
+<line x1="519" y1="488" x2="664" y2="488"/>
+<line x1="667" y1="513" x2="960" y2="513"/>
+<line x1="963" y1="538" x2="1108" y2="538"/>
+<line x1="1111" y1="563" x2="966" y2="563"/>
+<line x1="963" y1="588" x2="670" y2="588"/>
+<line x1="667" y1="613" x2="522" y2="613"/>
+<line x1="963" y1="638" x2="818" y2="638"/>
+<line x1="815" y1="663" x2="670" y2="663"/>
+<line x1="223" y1="688" x2="368" y2="688"/>
+<line x1="223" y1="747" x2="960" y2="747"/>
+<line x1="963" y1="772" x2="818" y2="772"/>
+<line x1="815" y1="797" x2="670" y2="797"/>
+<line x1="667" y1="822" x2="522" y2="822"/>
+<line x1="75" y1="847" x2="368" y2="847"/>
+<path d="M215 692 H183 V434 H213" stroke="#8a4b16"/>
+</g>
+<text class="msg" x="223" y="90" text-anchor="middle">N on an item: draft + snapshot</text>
+<text class="msg" x="223" y="115" text-anchor="middle">types · Send</text>
+<text class="msg" x="445" y="140" text-anchor="middle">upload(png) → ImageRef</text>
+<text class="msg" x="445" y="165" text-anchor="middle">start(page, anchor@s0, images)</text>
+<text class="msg" x="593" y="190" text-anchor="middle">watch → RC thread, image_url</text>
+<text class="msg" x="667" y="249" text-anchor="middle">revise t408…t432 (my notes on Fernando&#x27;s batch)</text>
+<text class="msg" x="1037" y="274" text-anchor="middle">c1 on a branch, MR !N</text>
+<text class="msg" x="889" y="299" text-anchor="middle">MR pipeline @c1</text>
+<text class="msg" x="741" y="324" text-anchor="middle">review release c1, line !N</text>
+<text class="msg" x="297" y="383" text-anchor="middle">opens ?change=!N</text>
+<text class="msg" x="519" y="408" text-anchor="middle">line !N · diff(s0, c1)</text>
+<text class="msg" x="297" y="433" text-anchor="middle">N on an item · Ask AI</text>
+<text class="msg" x="445" y="458" text-anchor="middle">start(page+!N, @c1)</text>
+<text class="msg" x="593" y="483" text-anchor="middle">watch (owner-only page)</text>
+<text class="msg" x="815" y="508" text-anchor="middle">MR note + 3D link + ![](cdn url)</text>
+<text class="msg" x="1037" y="533" text-anchor="middle">note → agent turn</text>
+<text class="msg" x="1037" y="558" text-anchor="middle">pushes c2 · reply note</text>
+<text class="msg" x="815" y="583" text-anchor="middle">note hook</text>
+<text class="msg" x="593" y="608" text-anchor="middle">reply cites c2</text>
+<text class="msg" x="889" y="633" text-anchor="middle">MR pipeline @c2</text>
+<text class="msg" x="741" y="658" text-anchor="middle">review release c2</text>
+<text class="msg" x="297" y="683" text-anchor="middle">c1 → c2, outdated pins</text>
+<text class="msg" x="593" y="742" text-anchor="middle">merge !N (squash → s1)</text>
+<text class="msg" x="889" y="767" text-anchor="middle">main pipeline: deploy</text>
+<text class="msg" x="741" y="792" text-anchor="middle">release s1, mr !N</text>
+<text class="msg" x="593" y="817" text-anchor="middle">“Changed in …” on t408…</text>
+<text class="msg" x="223" y="842" text-anchor="middle">sees s0 → s1 · no review threads</text>
+<text class="lbl" x="177" y="557" text-anchor="end">until</text>
+<text class="lbl" x="177" y="571" text-anchor="end">happy</text>
+</svg>
+<h2>Types</h2>
+<div class="types"><div><details><summary><span class="tag changed">~</span><b>PageRef</b> · the key of every thread</summary><table><tr class=""><td>  site, route, subpath</td><td>as today</td></tr><tr class="new"><td>+ change: &quot;!N&quot; | null</td><td>null = Live; !1510 = that MR&#x27;s review</td></tr></table></details><details><summary><span class="tag same">=</span><b>Grant</b> · what a caller may do on a page</summary><table><tr class=""><td>  view, notes, comment, owner</td><td></td></tr><tr class=""><td>  Live</td><td>the page&#x27;s share: Fernando and Austin comment</td></tr><tr class=""><td>  Review</td><td>OWNER_ONLY, the policy page_access already has</td></tr></table></details><details><summary><span class="tag same">=</span><b>Anchor</b> · where a 3D thread points</summary><table><tr class=""><td>  target, label</td><td>&quot;scene3d&quot;, the item&#x27;s name</td></tr><tr class=""><td>  extra.view</td><td>{layout, build, sha, revision}: the commit on screen</td></tr><tr class=""><td>  extra.placement</td><td>{id, local}: follows the item across builds</td></tr><tr class=""><td>  extra.point, camera</td><td>fallback position and the view</td></tr></table></details><details><summary><span class="tag changed">~</span><b>Release</b> · what a pipeline hands Revisions</summary><table><tr class=""><td>  sha, short, at, title, mr</td><td>as deploy.sh writes today</td></tr><tr class="new"><td>+ line</td><td>&quot;main&quot; | &quot;!N&quot;</td></tr><tr class="new"><td>+ base</td><td>the main commit the MR is compared against</td></tr></table></details><details><summary><span class="tag new">+</span><b>Line</b> · a sequence of commits in Revisions</summary><table><tr class="new"><td>+ name</td><td>main | !N</td></tr><tr class="new"><td>+ commits: Commit[]</td><td>only commits whose builds changed</td></tr><tr class="new"><td>+ head: Commit</td><td></td></tr></table></details><details><summary><span class="tag same">=</span><b>Commit</b> · one git commit as the gym shows it</summary><table><tr class=""><td>  sha, short</td><td>never shown alone</td></tr><tr class=""><td>  title, at, mr</td><td>the subject is what the UI shows</td></tr><tr class=""><td>  builds: {layout: BuildId}</td><td></td></tr></table></details><details><summary><span class="tag same">=</span><b>BuildId</b> · content address of one layout&#x27;s build</summary><table><tr class=""><td>  16 hex</td><td>sha256 of scene.glb, collision.json, checks.json, canonical manifest</td></tr><tr class=""><td>  no sha inside</td><td>the MR head and its squash on main share one BuildId</td></tr></table></details><details><summary><span class="tag new">+</span><b>ChangeSet</b> · the diff between two builds of a layout</summary><table><tr class="new"><td>+ base, head: BuildId</td><td></td></tr><tr class="new"><td>+ added: id[]</td><td>highlighted</td></tr><tr class="new"><td>+ removed: {id, bounds}[]</td><td>ghost boxes</td></tr><tr class="new"><td>+ moved: {id, from, to}[]</td><td>with a trail</td></tr><tr class="new"><td>+ changed: {id, component}[]</td><td>same place, new geometry</td></tr></table></details></div><div><details><summary><span class="tag changed">~</span><b>ChangeLogEntry</b> · one answered comment in the page&#x27;s change log</summary><table><tr class=""><td>  id, title, response, status, layouts</td><td>as R2&#x27;s change-log.json</td></tr><tr class="new"><td>+ threads: ThreadId[]</td><td>the Live threads it answers</td></tr></table></details><details><summary><span class="tag changed">~</span><b>MirrorLink</b> · the mirror Store&#x27;s pairing of a thread</summary><table><tr class=""><td>  thread → rc:&lt;tmid&gt;</td><td>a Live thread&#x27;s Rocket.Chat root</td></tr><tr class="new"><td>+ thread → gl:&lt;discussion&gt;</td><td>a review thread&#x27;s MR discussion</td></tr><tr class=""><td>  post n ⇄ message id</td><td>each post sent once, either way</td></tr></table></details><details><summary><span class="tag new">+</span><b>Draft</b> · what N hands the HUD&#x27;s composer</summary><table><tr class="new"><td>+ anchor: Anchor</td><td>the viewer&#x27;s anchorer at the crosshair</td></tr><tr class="new"><td>+ images: Blob[]</td><td>the canvas snapshot; shown, not uploaded</td></tr><tr class="new"><td>+ text</td><td>empty; the cursor waits there</td></tr></table></details><details><summary><span class="tag changed">~</span><b>HudApi</b> · the window.__hud a page talks to</summary><table><tr class=""><td>  extend, setFacet, facet, openAt</td><td>as today</td></tr><tr class="new"><td>+ compose(draft)</td><td>opens the composer with the draft</td></tr></table></details><details><summary><span class="tag new">+</span><b>ImageRef</b> · one stored image, by content</summary><table><tr class="new"><td>+ sha256</td><td>its name and its secret</td></tr><tr class="new"><td>+ url</td><td>cdn.molab.life/talk-media/&lt;sha256&gt;.&lt;ext&gt;</td></tr><tr class="new"><td>+ type, width, height</td><td>image/png | jpeg | webp</td></tr></table></details><details><summary><span class="tag changed">~</span><b>Post</b> · one message in a thread</summary><table><tr class=""><td>  n, author, text, at</td><td>as today</td></tr><tr class="new"><td>+ images: ImageRef[]</td><td>shown under the text; rendering is out of scope</td></tr><tr class=""><td>  origin</td><td>rc:&lt;id&gt; or gl:&lt;note&gt; when it came from a mirror</td></tr></table></details><details><summary><span class="tag removed">−</span><b>PreviewPage</b> · a hand-published shary-walkthrough--&lt;name&gt;</summary><table><tr class="removed"><td>− publish --name</td><td>replaced by the MR&#x27;s review line</td></tr><tr class="removed"><td>− copied threads</td><td>replaced by the review scope</td></tr></table></details></div></div>
+</main></body></html>

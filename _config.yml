@@ -191,6 +191,15 @@ defaults:
       layout: page
       permalink: /:title/
 
+# Skills tab (_plugins/skills-from-dotfiles.rb). _data/skills.yml picks which
+# skills to publish; each SKILL.md is read from this git checkout at build
+# time. SKILLS_REPO / SKILLS_REF override; ref "working-tree" previews
+# uncommitted edits.
+skills:
+  repo: ~/dotfiles
+  ref: HEAD
+  dir: .agents/skills
+
 sass:
   style: compressed
 
